@@ -6,6 +6,9 @@ import copy
 from itertools import product
 from automateBase import AutomateBase
 
+from functools import reduce
+
+flat_map = lambda f, xs: reduce(lambda a, b: a + b, map(f, xs))
 
 
 class Automate(AutomateBase):
@@ -28,7 +31,8 @@ class Automate(AutomateBase):
         rend la liste des états accessibles à partir de la liste d'états
         listStates par l'étiquette lettre
         """
-        return
+        L = flat_map(lambda x : self.succElem(x, lettre), listStates)
+        return list(dict.fromkeys(L)) # enlever duplicates
 
 
 
@@ -46,7 +50,11 @@ class Automate(AutomateBase):
         """ Automate x str -> bool
         rend True si auto accepte mot, False sinon
         """
-        return
+        def _f(auto, states, m):
+            x = m[0]
+            mot = m[1:]
+            return auto.succ(states, x)
+        return _f(auto, auto.getListInitialStates(), mot)
 
 
     @staticmethod
