@@ -50,11 +50,16 @@ class Automate(AutomateBase):
         """ Automate x str -> bool
         rend True si auto accepte mot, False sinon
         """
-        def _f(auto, states, m):
-            x = m[0]
-            mot = m[1:]
-            return auto.succ(states, x)
-        return _f(auto, auto.getListInitialStates(), mot)
+        
+        c_states = auto.getListInitialStates()
+        for l in mot:
+            c_states = auto.succ(c_states, l)
+            if len(c_states) == 0: 
+                return False
+        for st in c_states:
+            if st.fin:
+                return True
+        return False
 
 
     @staticmethod
