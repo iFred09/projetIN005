@@ -3,10 +3,12 @@ from transition import *
 from state import *
 import os
 import copy
+
 from itertools import product
+from functools import reduce
+
 from automateBase import AutomateBase
 
-from functools import reduce
 
 flat_map = lambda f, xs: reduce(lambda a, b: a + b, map(f, xs))
 
@@ -67,8 +69,16 @@ class Automate(AutomateBase):
         """ Automate x str -> bool
          rend True si auto est complet pour alphabet, False sinon
         """
-        return 
-
+        c_states = auto.getListInitialStates()
+        n_states = []
+        for l in alphabet:
+            nl_states = auto.succ(c_states, l)
+            if len(nl_states) == 0: 
+                return False
+            n_states += nl_states
+            c_states = n_states
+            n_states = []
+        return True
 
         
     @staticmethod
@@ -76,7 +86,22 @@ class Automate(AutomateBase):
         """ Automate  -> bool
         rend True si auto est déterministe, False sinon
         """
-        return
+        visited = {}
+        queue = auto.getListInitialStates()
+        n_queue = []
+        while len(queue) != 0:
+            for state in queue:
+                transitions = auto.getListTransitionsFrom(state)
+                etiquettes = {}
+                for trans in transitions:
+                    if trans.stateDest not in visited:
+                        n_queue += trans.stateDest
+                    if trans.etiquette in etiquettes:
+                        return False
+                    etiquettes += trans.etiquette
+            queue = n_queue
+            n_queue = []
+        return True
         
 
        
