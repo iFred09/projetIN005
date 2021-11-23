@@ -3,12 +3,14 @@
 Code modifiable.
 """
 
+from enum import auto
 from automate import Automate
 from state import State
 from transition import Transition
 from myparser import *
 
 automate = Automate.creationAutomate("exempleAutomate.txt")
+automate.show("exempleAutomate")
 autodeter = Automate.determinisation(automate)
 autodeter.show("exempleAutomateDeter")
 

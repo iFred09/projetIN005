@@ -154,7 +154,7 @@ class Automate(AutomateBase):
             idUtilises.add(idCount)
             return idCount
             
-        visited = {}
+        visited = { state.label : state for state in auto.getListInitialStates()}
         def DFS(metastate, states):
             nonlocal nauto
             nonlocal visited
@@ -169,7 +169,8 @@ class Automate(AutomateBase):
                         trans[t.etiquette] = [t]
             # parcourir toutes les transitions par etiquette
             for et, ts in trans.items():
-                newMetaEtatEtiquette = "{"+",".join(map(lambda t: t.stateDest.label, ts))+"}"
+                newMetaEtatEtiquette = {t.stateDest.label for t in ts}
+                newMetaEtatEtiquette = "{"+",".join(newMetaEtatEtiquette)+"}" if len(newMetaEtatEtiquette) > 1 else "".join(newMetaEtatEtiquette)
                 wasVisited = newMetaEtatEtiquette in visited
                 if not wasVisited:
                     # ajouter l'etat s'il n'existe pas 
