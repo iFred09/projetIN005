@@ -7,6 +7,8 @@ import copy
 from itertools import product
 from functools import reduce
 
+from typing import Set, List, Dict, Tuple
+
 from automateBase import AutomateBase
 
 
@@ -86,21 +88,18 @@ class Automate(AutomateBase):
         """ Automate  -> bool
         rend True si auto est déterministe, False sinon
         """
-        visited = {}
+        visited = set()
         queue = auto.getListInitialStates()
-        n_queue = []
         while len(queue) != 0:
-            for state in queue:
-                transitions = auto.getListTransitionsFrom(state)
-                etiquettes = {}
-                for trans in transitions:
-                    if trans.stateDest not in visited:
-                        n_queue += trans.stateDest
-                    if trans.etiquette in etiquettes:
-                        return False
-                    etiquettes += trans.etiquette
-            queue = n_queue
-            n_queue = []
+            state = queue.pop(0)
+            transitions = auto.getListTransitionsFrom(state)
+            etiquettes = set()
+            for trans in transitions:
+                if trans.stateDest not in visited:
+                    queue += [trans.stateDest]
+                if trans.etiquette in etiquettes:
+                    return False
+                etiquettes.add(trans.etiquette)
         return True
         
 
@@ -109,17 +108,85 @@ class Automate(AutomateBase):
     def completeAutomate(auto,alphabet) :
         """ Automate x str -> Automate
         rend l'automate complété d'auto, par rapport à alphabet
+        Hypothèse : il n'existe pas d'états avec un identifiant -42
         """
-        return
+        newAuto = copy.deepcopy(auto)
+        if Automate.estComplet(auto, alphabet) == True:
+            return newAuto
+        puit = State(-42, False, False, "puit")
+        newAuto.addState(puit)
+        queue = newAuto.getListInitialStates()
+        nqueue = []
+        visited = {puit}
+        while len(queue) != 0:
+            for state in queue:
+                for lt in alphabet:
+                    trans = newAuto.succElem(state, lt)
+                    for t in trans:
+                        if t.stateDest not in visited:
+                            nqueue += t.stateDest
+                    if len(trans) == 0:
+                        newAuto.addTransition(Transition(state, lt, puit))
+            queue = nqueue
+            nqueue = []
+        return newAuto
 
-       
+
 
     @staticmethod
     def determinisation(auto) :
         """ Automate  -> Automate
         rend l'automate déterminisé d'auto
         """
-        return
+        if Automate.estDeterministe(auto):
+            return copy.deepcopy(auto)
+        nauto = Automate([], copy.deepcopy(auto.getListInitialStates()), auto.label+" deterministe" if auto.label is not None else None)
+
+        idUtilises = {map(lambda state: state.id, auto.getListInitialStates())}
+        idCount = 6942
+        # generer un id unique
+        def genId():
+            nonlocal idCount
+            nonlocal idUtilises
+
+            while idCount in idUtilises:
+                idCount += 1
+            idUtilises.add(idCount)
+            return idCount
+            
+        visited = {}
+        def DFS(metastate, states):
+            nonlocal nauto
+            nonlocal visited
+
+            trans = {}
+            # collectionner toutes les transitions possibles par etiquette dans trans
+            for s in states:
+                for t in auto.getListTransitionsFrom(s):
+                    if t.etiquette in trans:
+                        trans[t.etiquette] += [t]
+                    else:
+                        trans[t.etiquette] = [t]
+            # parcourir toutes les transitions par etiquette
+            for et, ts in trans.items():
+                newMetaEtatEtiquette = "{"+",".join(map(lambda t: t.stateDest.label, ts))+"}"
+                wasVisited = newMetaEtatEtiquette in visited
+                if not wasVisited:
+                    # ajouter l'etat s'il n'existe pas 
+                    newMetaEtat = State(genId(), False, False, newMetaEtatEtiquette)
+                    nauto.addState(newMetaEtat)
+                    visited[newMetaEtatEtiquette] = newMetaEtat
+                # ajouter transition de current vers l'état nouveau / existant
+                nauto.addTransition(Transition(metastate, et, visited[newMetaEtatEtiquette]))
+                if not wasVisited:
+                    # parcourir l'état s'il est nouveau (ajouter toutes les transitions sortantes)
+                    DFS(newMetaEtat, map(lambda t: t.stateDest, ts))
+
+        # commencer le parcours avec les etats initiaux
+        for s in auto.getListInitialStates():
+            DFS(copy.deepcopy(s), [s])
+
+        return nauto
         
     @staticmethod
     def complementaire(auto,alphabet):
