@@ -169,8 +169,10 @@ class Automate(AutomateBase):
                         trans[t.etiquette] = [t]
             # parcourir toutes les transitions par etiquette
             for et, ts in trans.items():
-                newMetaEtatEtiquette = {t.stateDest.label for t in ts}
+                newMetaEtatEtiquette = list({t.stateDest.label for t in ts})
+                newMetaEtatEtiquette.sort()
                 newMetaEtatEtiquette = "{"+",".join(newMetaEtatEtiquette)+"}" if len(newMetaEtatEtiquette) > 1 else "".join(newMetaEtatEtiquette)
+
                 wasVisited = newMetaEtatEtiquette in visited
                 if not wasVisited:
                     # ajouter l'etat s'il n'existe pas 
