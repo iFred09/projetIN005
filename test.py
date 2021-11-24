@@ -9,10 +9,12 @@ from state import State
 from transition import Transition
 from myparser import *
 
-automate = Automate.creationAutomate("exempleAutomate.txt")
-automate.show("exempleAutomate")
+file = "exempleAutomate2"
+
+automate = Automate.creationAutomate(file+".txt")
+automate.show("./pdf/"+file)
 autodeter = Automate.determinisation(automate)
-autodeter.show("exempleAutomateDeter")
+autodeter.show("./pdf/"+file+"Deter")
 
 # s1= State(1, False, False)
 # s2= State(2, False, False)

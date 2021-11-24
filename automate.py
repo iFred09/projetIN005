@@ -140,21 +140,24 @@ class Automate(AutomateBase):
         """
         if Automate.estDeterministe(auto):
             return copy.deepcopy(auto)
-        nauto = Automate([], copy.deepcopy(auto.getListInitialStates()), auto.label+" deterministe" if auto.label is not None else None)
+        nauto = Automate([], [], auto.label+" deterministe" if auto.label is not None else None)
 
-        idUtilises = {map(lambda state: state.id, auto.getListInitialStates())}
-        idCount = 6942
         # generer un id unique
+        idCount = 1
         def genId():
             nonlocal idCount
-            nonlocal idUtilises
-
-            while idCount in idUtilises:
-                idCount += 1
-            idUtilises.add(idCount)
+            idCount += 1
             return idCount
-            
-        visited = { state.label : state for state in auto.getListInitialStates()}
+
+        def etatsToLabel(states):
+            lab = sorted(list({t.label for t in states}))
+            return"{"+",".join(lab)+"}"
+
+        autoInits = auto.getListInitialStates()
+        initialState = State(genId(), True, any([s.fin for s in autoInits]), etatsToLabel(autoInits))
+        nauto.addState(initialState)
+
+        visited = { initialState.label : initialState }
         def DFS(metastate, states):
             nonlocal nauto
             nonlocal visited
@@ -169,14 +172,12 @@ class Automate(AutomateBase):
                         trans[t.etiquette] = [t]
             # parcourir toutes les transitions par etiquette
             for et, ts in trans.items():
-                newMetaEtatEtiquette = list({t.stateDest.label for t in ts})
-                newMetaEtatEtiquette.sort()
-                newMetaEtatEtiquette = "{"+",".join(newMetaEtatEtiquette)+"}" if len(newMetaEtatEtiquette) > 1 else "".join(newMetaEtatEtiquette)
+                newMetaEtatEtiquette = etatsToLabel([t.stateDest for t in ts])
 
                 wasVisited = newMetaEtatEtiquette in visited
                 if not wasVisited:
                     # ajouter l'etat s'il n'existe pas 
-                    newMetaEtat = State(genId(), False, False, newMetaEtatEtiquette)
+                    newMetaEtat = State(genId(), False, any([t.stateDest.fin for t in ts]), newMetaEtatEtiquette)
                     nauto.addState(newMetaEtat)
                     visited[newMetaEtatEtiquette] = newMetaEtat
                 # ajouter transition de current vers l'état nouveau / existant
@@ -186,8 +187,7 @@ class Automate(AutomateBase):
                     DFS(newMetaEtat, map(lambda t: t.stateDest, ts))
 
         # commencer le parcours avec les etats initiaux
-        for s in auto.getListInitialStates():
-            DFS(copy.deepcopy(s), [s])
+        DFS(initialState, autoInits)
 
         return nauto
         
