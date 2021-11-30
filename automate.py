@@ -71,15 +71,13 @@ class Automate(AutomateBase):
         """ Automate x str -> bool
          rend True si auto est complet pour alphabet, False sinon
         """
-        c_states = auto.getListInitialStates()
-        n_states = []
-        for l in alphabet:
-            nl_states = auto.succ(c_states, l)
-            if len(nl_states) == 0: 
-                return False
-            n_states += nl_states
-            c_states = n_states
-            n_states = []
+        for st in auto.listStates:
+            ets = set()
+            for tr in auto.getListTransitionsFrom(st):
+                ets.add(tr.etiquette)
+            for a in alphabet:
+                if a not in ets:
+                    return False
         return True
 
         
@@ -113,22 +111,22 @@ class Automate(AutomateBase):
         newAuto = copy.deepcopy(auto)
         if Automate.estComplet(auto, alphabet) == True:
             return newAuto
-        puit = State(-42, False, False, "puit")
+        puit = State(-42, False, False, "⊥")
         newAuto.addState(puit)
         queue = newAuto.getListInitialStates()
-        nqueue = []
         visited = {puit}
         while len(queue) != 0:
-            for state in queue:
-                for lt in alphabet:
-                    trans = newAuto.succElem(state, lt)
-                    for t in trans:
-                        if t.stateDest not in visited:
-                            nqueue += t.stateDest
-                    if len(trans) == 0:
-                        newAuto.addTransition(Transition(state, lt, puit))
-            queue = nqueue
-            nqueue = []
+            state = queue.pop(0)
+            visited.add(state)
+            for lt in alphabet:
+                transDest = newAuto.succElem(state, lt)
+                for td in transDest:
+                    if td not in visited:
+                        queue.append(td)
+                if len(transDest) == 0:
+                    newAuto.addTransition(Transition(state, lt, puit))
+        for a in alphabet:
+            newAuto.addTransition(Transition(puit, a, puit))
         return newAuto
 
 
@@ -196,21 +194,66 @@ class Automate(AutomateBase):
         """ Automate -> Automate
         rend  l'automate acceptant pour langage le complémentaire du langage de a
         """
-              
+        compauto = copy.deepcopy(auto)
+        if not Automate.estDeterministe(compauto) :
+            compauto = Automate.determinisation(compauto)
+        if not Automate.estComplet(compauto, alphabet) :
+            compauto = Automate.completeAutomate(compauto, alphabet)
+        for st in compauto.listStates:
+            st.fin = not st.fin
+        return compauto
    
+
+    @staticmethod
+    def _inter_union(auto0, auto1, estfinal):
+        nauto = Automate([], [], auto0.label + " inter " + auto1.label if auto0.label != None and auto1.label != None else None)
+        
+        idCount = 1
+        def genId():
+            nonlocal idCount
+            idCount += 1
+            return idCount
+
+        def etatsToLabel(states):
+            lab = sorted(list({str(t.label) for t in states}))
+            return"{"+",".join(lab)+"}"
+
+        labelToEtat = {}
+        for s0 in auto0.listStates:
+            for s1 in auto1.listStates:
+                sn = State(genId(), s0.init and s1.init, estfinal(s0, s1), etatsToLabel([s0, s1]))
+                nauto.addState(sn)
+                labelToEtat[sn.label] = sn
+        
+        for t0 in auto0.listTransitions:
+            for t1 in auto1.listTransitions:
+                if t0.etiquette != t1.etiquette:
+                    continue
+                tn = Transition(
+                    labelToEtat[etatsToLabel([t0.stateSrc, t1.stateSrc])], 
+                    t0.etiquette, 
+                    labelToEtat[etatsToLabel([t0.stateDest, t1.stateDest])])
+                nauto.addTransition(tn)
+
+        return nauto
+
+
     @staticmethod
     def intersection (auto0, auto1):
         """ Automate x Automate -> Automate
         rend l'automate acceptant pour langage l'intersection des langages des deux automates
         """
-        return
+        return Automate._inter_union(auto0, auto1, lambda s1, s2: s1.fin and s2.fin)
+        
 
     @staticmethod
     def union (auto0, auto1):
         """ Automate x Automate -> Automate
         rend l'automate acceptant pour langage l'union des langages des deux automates
         """
-        return
+        if not Automate.estComplet(auto0, auto0.getAlphabetFromTransitions()) or not Automate.estComplet(auto1, auto1.getAlphabetFromTransitions()):
+            return None
+        return Automate._inter_union(auto0, auto1, lambda s1, s2: s1.fin or s2.fin)
         
 
    

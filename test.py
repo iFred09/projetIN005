@@ -9,12 +9,26 @@ from state import State
 from transition import Transition
 from myparser import *
 
-file = "exempleAutomate2"
+# file = "exempleAutomate3"
 
-automate = Automate.creationAutomate(file+".txt")
-automate.show("./pdf/"+file)
-autodeter = Automate.determinisation(automate)
-autodeter.show("./pdf/"+file+"Deter")
+# automate = Automate.creationAutomate(file+".txt")
+# automate.show("./pdf/"+file)
+# autodeter = Automate.complementaire(automate, automate.getAlphabetFromTransitions())
+# autodeter.show("./pdf/"+file+"Complementaire")
+# autocompl = Automate.completeAutomate(automate, automate.getAlphabetFromTransitions())
+# autocompl.show("./pdf/"+file+"Complet")
+
+
+file1 = "exempleAutomate"
+file2 = "exempleAutomate3"
+
+auto1 = Automate.creationAutomate(file1+".txt")
+auto2 = Automate.creationAutomate(file2+".txt")
+autointer = Automate.intersection(auto1, auto2)
+autointer.show("./pdf/"+file1+file2)
+autounion = Automate.union(auto1, auto2)
+autounion.show("./pdf/"+file2+file2)
+
 
 # s1= State(1, False, False)
 # s2= State(2, False, False)
