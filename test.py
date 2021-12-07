@@ -19,10 +19,10 @@ from myparser import *
 # autocompl.show("./pdf/"+file+"Complet")
 
 
-file1 = "automateinterro1"
-file2 = "automateinterro2"
 
 def test_accepte():
+    file1 = "automateinterro1"
+    file2 = "automateinterro2"
     auto1 = Automate.creationAutomate(file1+".txt")
     auto1.show("./pdf/"+file1)
 
