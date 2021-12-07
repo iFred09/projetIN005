@@ -43,6 +43,9 @@ class Transition :
         """
         return '['+str(self.stateSrc)+'-'+str(self.etiquette)+'->'+str(self.stateDest)+']'
 
+    def __hash__(self) -> int:
+        return hash((self.etiquette, self.stateDest, self.stateSrc))
+
         
 
     

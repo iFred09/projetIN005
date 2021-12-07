@@ -19,15 +19,38 @@ from myparser import *
 # autocompl.show("./pdf/"+file+"Complet")
 
 
-file1 = "exempleAutomate"
-file2 = "exempleAutomate3"
+file1 = "automateinterro1"
+file2 = "automateinterro2"
 
-auto1 = Automate.creationAutomate(file1+".txt")
-auto2 = Automate.creationAutomate(file2+".txt")
-autointer = Automate.intersection(auto1, auto2)
-autointer.show("./pdf/"+file1+file2)
-autounion = Automate.union(auto1, auto2)
-autounion.show("./pdf/"+file2+file2)
+def test_accepte():
+    auto1 = Automate.creationAutomate(file1+".txt")
+    auto1.show("./pdf/"+file1)
+
+    def test(x, b):
+        assert Automate.accepte(auto1, x) == b
+    test("abbbbbbba", True)
+    test("baaaaaaaaaaaa", False)
+    test("", False)
+    test("ab", True)
+    test("aaaa", False)
+    test("bbbbb", False)
+    test("abababababab", True)
+    test("bababababa", False)
+    auto2 = Automate.creationAutomate(file2+".txt")
+    auto2.show("./pdf/"+file2)
+test_accepte()
+
+
+# auto1 = Automate.etoile(auto1)
+# auto1.show("./pdf/"+file1+"_etoile")
+
+# autoconcat = Automate.concatenation(auto1, auto2)
+# autoconcat.show("./pdf/"+file1+"_concat_"+file2)
+
+# autointer = Automate.intersection(auto1, auto2)
+# autointer.show("./pdf/"+file1+"_inter_"+file2)
+# autounion = Automate.union(auto1, auto2)
+# autounion.show("./pdf/"+file1+"_union_"+file2)
 
 
 # s1= State(1, False, False)

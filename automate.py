@@ -36,7 +36,7 @@ class Automate(AutomateBase):
         listStates par l'étiquette lettre
         """
         L = flat_map(lambda x : self.succElem(x, lettre), listStates)
-        return list(dict.fromkeys(L)) # enlever duplicates
+        return list(dict.fromkeys(L)) # enlever doublons
 
 
 
@@ -103,7 +103,7 @@ class Automate(AutomateBase):
 
        
     @staticmethod
-    def completeAutomate(auto,alphabet) :
+    def completeAutomate(auto,alphabet):
         """ Automate x str -> Automate
         rend l'automate complété d'auto, par rapport à alphabet
         Hypothèse : il n'existe pas d'états avec un identifiant -42
@@ -132,7 +132,7 @@ class Automate(AutomateBase):
 
 
     @staticmethod
-    def determinisation(auto) :
+    def determinisation(auto):
         """ Automate  -> Automate
         rend l'automate déterminisé d'auto
         """
@@ -205,8 +205,8 @@ class Automate(AutomateBase):
    
 
     @staticmethod
-    def _inter_union(auto0, auto1, estfinal):
-        nauto = Automate([], [], auto0.label + " inter " + auto1.label if auto0.label != None and auto1.label != None else None)
+    def _produit(auto0, auto1, estfinal, act=" produit "):
+        nauto = Automate([], [], auto0.label + act + auto1.label if auto0.label != None and auto1.label != None else None)
         
         idCount = 1
         def genId():
@@ -215,13 +215,13 @@ class Automate(AutomateBase):
             return idCount
 
         def etatsToLabel(states):
-            lab = sorted(list({str(t.label) for t in states}))
-            return"{"+",".join(lab)+"}"
+            lab = [x.label for x in states]
+            return"("+",".join(lab)+")"
 
         labelToEtat = {}
         for s0 in auto0.listStates:
             for s1 in auto1.listStates:
-                sn = State(genId(), s0.init and s1.init, estfinal(s0, s1), etatsToLabel([s0, s1]))
+                sn = State(genId(), s0.init and s1.init, estfinal(s0, s1), etatsToLabel((s0, s1)))
                 nauto.addState(sn)
                 labelToEtat[sn.label] = sn
         
@@ -243,7 +243,7 @@ class Automate(AutomateBase):
         """ Automate x Automate -> Automate
         rend l'automate acceptant pour langage l'intersection des langages des deux automates
         """
-        return Automate._inter_union(auto0, auto1, lambda s1, s2: s1.fin and s2.fin)
+        return Automate._produit(auto0, auto1, lambda s1, s2: s1.fin and s2.fin, " inter ")
         
 
     @staticmethod
@@ -251,20 +251,48 @@ class Automate(AutomateBase):
         """ Automate x Automate -> Automate
         rend l'automate acceptant pour langage l'union des langages des deux automates
         """
-        if not Automate.estComplet(auto0, auto0.getAlphabetFromTransitions()) or not Automate.estComplet(auto1, auto1.getAlphabetFromTransitions()):
-            return None
-        return Automate._inter_union(auto0, auto1, lambda s1, s2: s1.fin or s2.fin)
+        auto0 = Automate.completeAutomate(auto0, auto0.getAlphabetFromTransitions()) 
+        auto1 = Automate.completeAutomate(auto1, auto1.getAlphabetFromTransitions()) 
+        return Automate._produit(auto0, auto1, lambda s1, s2: s1.fin or s2.fin, " unionn")
         
-
-   
-       
 
     @staticmethod
     def concatenation (auto1, auto2):
         """ Automate x Automate -> Automate
         rend l'automate acceptant pour langage la concaténation des langages des deux automates
         """
-        return
+        idCount = 0
+        def genID():
+            nonlocal idCount
+            idCount += 1
+            return idCount
+        def preproc(auto, pre):
+            na = copy.deepcopy(auto)
+            for s in na.listStates:
+                s.label = pre+s.label
+                s.id = genID()
+            return na
+        auto1 = preproc(auto1, "ζ-")
+        auto2 = preproc(auto2, "ѯ-")
+        trans = auto1.listTransitions + auto2.listTransitions
+        auto2_inits = [s for s in auto2.listStates if s.init]
+        for s in auto1.listStates:
+            t = auto1.getListTransitionsFrom(s)
+            for x in t:
+                if not x.stateDest.fin:
+                    continue
+                for sd in auto2_inits:
+                    trans.append(Transition(s, x.etiquette, sd))
+        if not Automate.accepte(auto1, ""):
+            for s in auto2.listStates:
+                s.init = False
+        for s in auto1.listStates:
+            s.fin = False
+
+        return Automate(
+            trans, 
+            auto1.listStates + auto2.listStates, 
+            auto1.label + " concat " + auto2.label if auto1.label != None and auto2.label != None else None)
         
        
     @staticmethod
@@ -272,8 +300,21 @@ class Automate(AutomateBase):
         """ Automate  -> Automate
         rend l'automate acceptant pour langage l'étoile du langage de a
         """
-        return
-
-
+        auto = copy.deepcopy(auto)
+        Tp = auto.listTransitions
+        Eis = [s for s in auto.listStates if s.init]
+        for s in auto.listStates:
+            ts = auto.getListTransitionsFrom(s)
+            for t in ts:
+                if not t.stateDest.fin:
+                    continue
+                for ds in Eis:
+                    Tp.append(Transition(s, t.etiquette, ds))
+        Tp = list(set(Tp))
+        speID = -42
+        while speID in [x.id for x in auto.listStates]:
+            speID -= 1
+        special = State(speID, True, True, "ฐ")
+        return Automate(Tp, auto.listStates+[special], "*"+auto.label if auto.label != None else None)
 
 

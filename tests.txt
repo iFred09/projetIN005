@@ -1,0 +1,12 @@
+***** def succElem(self, state, lettre):
+***** def succ (self, listStates, lettre):
+***** def accepte(auto,mot) :
+****  def estComplet(auto,alphabet) :
+****  def estDeterministe(auto) :
+***   def completeAutomate(auto,alphabet):
+****  def determinisation(auto) :
+***   def complementaire(auto,alphabet):
+***   def intersection (auto0, auto1):
+***   def union (auto0, auto1):
+***   def concatenation (auto1, auto2):
+***   def etoile (auto):
