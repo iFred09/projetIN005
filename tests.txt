@@ -1,7 +1,7 @@
 ***** def succElem(self, state, lettre):
 ***** def succ (self, listStates, lettre):
 ***** def accepte(auto,mot) :
-****  def estComplet(auto,alphabet) :
+**** def estComplet(auto,alphabet) :
 ****  def estDeterministe(auto) :
 ***   def completeAutomate(auto,alphabet):
 ****  def determinisation(auto) :

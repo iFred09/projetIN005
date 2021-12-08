@@ -40,6 +40,51 @@ def test_accepte():
     auto2.show("./pdf/"+file2)
 test_accepte()
 
+def test_estComplet():
+    file1 = "automateinterro1"
+    file2 = "automateinterro2"
+    file3 = "automate_facile2"
+    file6 = "exempleAutomate3"
+
+    auto1 = Automate.creationAutomate(file1+".txt")
+    auto1.show("./pdf/"+file1)
+    auto2 = Automate.creationAutomate(file2+".txt")
+    auto2.show("./pdf/"+file2)
+    auto3 = Automate.creationAutomate(file3+".txt")
+    auto3.show("./pdf/"+file3)
+    auto6 = Automate.creationAutomate(file6+".txt")
+    auto6.show("./pdf/"+file6)
+
+    def test(auto, restest):
+        assert Automate.estComplet(auto, auto.getAlphabetFromTransitions()) == restest
+    test(auto1, False)
+    test(auto2, False)
+    test(auto3, True)
+    test(auto6, False)
+test_estComplet()
+
+def test_estDeterministe():
+    file1 = "automateinterro1"
+    file2 = "automateinterro2"
+    file3 = "automate_facile2"
+    file6 = "auto"
+
+    auto1 = Automate.creationAutomate(file1+".txt")
+    auto1.show("./pdf/"+file1)
+    auto2 = Automate.creationAutomate(file2+".txt")
+    auto2.show("./pdf/"+file2)
+    auto3 = Automate.creationAutomate(file3+".txt")
+    auto3.show("./pdf/"+file3)
+    auto6 = Automate.creationAutomate(file6+".txt")
+    auto6.show("./pdf/"+file6)
+
+    def test(auto, restest):
+        assert Automate.estDeterministe(auto) == restest
+    test(auto1, False)
+    test(auto2, False)
+    test(auto3, False)
+    test(auto6, True)
+
 
 # auto1 = Automate.etoile(auto1)
 # auto1.show("./pdf/"+file1+"_etoile")
