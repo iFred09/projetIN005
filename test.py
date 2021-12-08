@@ -3,11 +3,11 @@
 Code modifiable.
 """
 
-from enum import auto
 from automate import Automate
 from state import State
 from transition import Transition
 from myparser import *
+from pathlib import Path
 
 # file = "exempleAutomate3"
 
@@ -18,13 +18,14 @@ from myparser import *
 # autocompl = Automate.completeAutomate(automate, automate.getAlphabetFromTransitions())
 # autocompl.show("./pdf/"+file+"Complet")
 
-
+def cpath(x):
+    return str(Path(x).absolute())
 
 def test_accepte():
     file1 = "automateinterro1"
     file2 = "automateinterro2"
     auto1 = Automate.creationAutomate(file1+".txt")
-    auto1.show("./pdf/"+file1)
+    # auto1.show(cpath("./pdf/"+file1))
 
     def test(x, b):
         assert Automate.accepte(auto1, x) == b
@@ -37,7 +38,7 @@ def test_accepte():
     test("abababababab", True)
     test("bababababa", False)
     auto2 = Automate.creationAutomate(file2+".txt")
-    auto2.show("./pdf/"+file2)
+    # auto2.show(cpath("./pdf/"+file2))
 test_accepte()
 
 def test_estComplet():

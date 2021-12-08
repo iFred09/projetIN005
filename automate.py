@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from enum import auto
 from transition import *
 from state import *
 import os
@@ -317,4 +318,6 @@ class Automate(AutomateBase):
         special = State(speID, True, True, "ฐ")
         return Automate(Tp, auto.listStates+[special], "*"+auto.label if auto.label != None else None)
 
-
+    @staticmethod
+    def equivalents(auto1, auto2):
+        return False
