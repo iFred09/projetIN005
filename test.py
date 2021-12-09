@@ -97,7 +97,7 @@ def test_intersection():
 
     auto3 = Automate.intersection(auto1, auto2)
     auto3.show("./pdf/"+file1+"_inter_"+file2)
-test_intersection()
+# test_intersection()
 
 def test_completeAutomate():
     file1 = "exempleAutomate3"
@@ -138,15 +138,15 @@ def test_determinisation():
 # test_determinisation()
 
 def test_union():
-    # file1 = "automateinterro1"
-    # file2 = "automateinterro2"
+    file1 = "automateinterro1"
+    file2 = "automateinterro2"
     file3 = "autounion1"
     file4 = "autounion2"
 
-    # auto1 = Automate.creationAutomate(file1+".txt")
-    # # auto1.show("./pdf/"+file1)
-    # auto2 = Automate.creationAutomate(file2+".txt")
-    # auto2.show("./pdf/"+file2)
+    auto1 = Automate.creationAutomate(file1+".txt")
+    auto1.show("./pdf/"+file1)
+    auto2 = Automate.creationAutomate(file2+".txt")
+    auto2.show("./pdf/"+file2)
     auto3 = Automate.creationAutomate(file3+".txt")
     auto3.show("./pdf/"+file3)
     auto4 = Automate.creationAutomate(file4+".txt")
@@ -161,14 +161,47 @@ def test_union():
     assert Automate.estComplet(autounion2, autounion2.getAlphabetFromTransitions())
 # test_union()
 
+def test_concatenation():
+    # file1 = "automateinterro1"
+    # file2 = "automateinterro2"
+    # file3 = "automatecoursconcat1"
+    # file4 = "automatecoursconcat2"
+    file5 = "auto1"
+    file6 = "auto2"
 
-# auto1 = Automate.etoile(auto1)
-# auto1.show("./pdf/"+file1+"_etoile")
+    # auto1 = Automate.creationAutomate(file1+".txt")
+    # auto1.show("./pdf/"+file1)
+    # auto2 = Automate.creationAutomate(file2+".txt")
+    # auto2.show("./pdf/"+file2)
+    # auto3 = Automate.creationAutomate(file3+".txt")
+    # auto3.show("./pdf/"+file3)
+    # auto4 = Automate.creationAutomate(file4+".txt")
+    # auto4.show("./pdf/"+file4)
+    auto5 = Automate.creationAutomate(file5+".txt")
+    auto5.show("./pdf/"+file5)
+    auto6 = Automate.creationAutomate(file6+".txt")
+    auto6.show("./pdf/"+file6)
 
-# autoconcat = Automate.concatenation(auto1, auto2)
-# autoconcat.show("./pdf/"+file1+"_concat_"+file2)
+    # autoconcat = Automate.concatenation(auto1, auto2)
+    # autoconcat.show("./pdf/"+file1+"_concat_"+file2)
+    # autocoursconcat = Automate.concatenation(auto3, auto4)
+    # autocoursconcat.show("./pdf/"+file3+"_concat_"+file4)
+    autozeinconcat = Automate.concatenation(auto5,auto6)
+    autozeinconcat.show("./pdf/"+file5+"_concat_"+file6)
+# test_concatenation()
 
-# autointer = Automate.intersection(auto1, auto2)
-# autointer.show("./pdf/"+file1+"_inter_"+file2)
-# autounion = Automate.union(auto1, auto2)
-# autounion.show("./pdf/"+file1+"_union_"+file2)
+def test_etoile():
+    file1 = "automateinterro1"
+    file2 = "automatecoursetoile"
+
+    auto1 = Automate.creationAutomate(file1+".txt")
+    auto1.show("./pdf/"+file1)
+    auto2 = Automate.creationAutomate(file2+".txt")
+    auto2.show("./pdf/"+file2)
+
+    autoet1 = Automate.etoile(auto1)
+    autoet1.show("./pdf/"+file1+"_etoile")
+
+    autoet2 = Automate.etoile(auto2)
+    autoet2.show("./pdf/"+file2+"_etoile")
+test_etoile()
