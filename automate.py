@@ -91,6 +91,7 @@ class Automate(AutomateBase):
         queue = auto.getListInitialStates()
         while len(queue) != 0:
             state = queue.pop(0)
+            visited.add(state)
             transitions = auto.getListTransitionsFrom(state)
             etiquettes = set()
             for trans in transitions:
@@ -235,6 +236,13 @@ class Automate(AutomateBase):
                     t0.etiquette, 
                     labelToEtat[etatsToLabel([t0.stateDest, t1.stateDest])])
                 nauto.addTransition(tn)
+
+        for s in nauto.listStates:
+            if len([t for t in nauto.listTransitions if t.stateDest == s]) == 0:
+                nauto.removeState(s)
+                for t in nauto.listTransitions:
+                    if t.stateSrc == s:
+                        nauto.removeTransition(t)
 
         return nauto
 

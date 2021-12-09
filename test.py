@@ -39,7 +39,7 @@ def test_accepte():
     test("bababababa", False)
     auto2 = Automate.creationAutomate(file2+".txt")
     # auto2.show(cpath("./pdf/"+file2))
-test_accepte()
+# test_accepte()
 
 def test_estComplet():
     file1 = "automateinterro1"
@@ -62,7 +62,7 @@ def test_estComplet():
     test(auto2, False)
     test(auto3, True)
     test(auto6, False)
-test_estComplet()
+# test_estComplet()
 
 def test_estDeterministe():
     file1 = "automateinterro1"
@@ -86,6 +86,57 @@ def test_estDeterministe():
     test(auto3, False)
     test(auto6, True)
 
+def test_intersection():
+    file1 = "auto1"
+    file2 = "auto2"
+
+    auto1 = Automate.creationAutomate(file1+".txt")
+    auto1.show("./pdf/"+file1)
+    auto2 = Automate.creationAutomate(file2+".txt")
+    auto2.show("./pdf/"+file2)
+
+    auto3 = Automate.intersection(auto1, auto2)
+    auto3.show("./pdf/"+file1+"_inter_"+file2)
+# test_intersection()
+
+def test_completeAutomate():
+    file1 = "exempleAutomate3"
+
+    auto1 = Automate.creationAutomate(file1+".txt")
+    auto1.show("./pdf/"+file1)
+
+    autocomplet = Automate.completeAutomate(auto1, auto1.getAlphabetFromTransitions())
+    autocomplet.show("./pdf/"+file1+"_complet")
+
+    def testComplet(auto, res):
+        assert Automate.estComplet(auto, auto.getAlphabetFromTransitions()) == res
+    testComplet(auto1, False)
+    testComplet(autocomplet, True)
+# test_completeAutomate()
+
+def test_determinisation():
+    file1 = "exempleAutomate3"
+    file2 = "auto2"
+
+    auto1 = Automate.creationAutomate(file1+".txt")
+    auto1.show("./pdf/"+file1)
+    auto2 = Automate.creationAutomate(file2+".txt")
+    auto2.show("./pdf/"+file2)
+    
+
+    autodeter = Automate.determinisation(auto1)
+    autodeter.show("./pdf/"+file1+"_determinise")
+    autodeter2 = Automate.determinisation(auto2)
+    autodeter2.show("./pdf/"+file2+"_determinise")
+
+    def testDeter(auto, res):
+        assert Automate.estDeterministe(auto) == res
+    testDeter(auto1, False)
+    testDeter(autodeter, True)
+    testDeter(auto2, False)
+    testDeter(autodeter2, True)
+test_determinisation()
+    
 
 # auto1 = Automate.etoile(auto1)
 # auto1.show("./pdf/"+file1+"_etoile")
