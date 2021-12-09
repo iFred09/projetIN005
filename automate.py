@@ -208,8 +208,6 @@ class Automate(AutomateBase):
 
     @staticmethod
     def _produit(auto0, auto1, estfinal, act=" produit "):
-        nauto = Automate([], [], auto0.label + act + auto1.label if auto0.label != None and auto1.label != None else None)
-        
         idCount = 1
         def genId():
             nonlocal idCount
@@ -220,32 +218,41 @@ class Automate(AutomateBase):
             lab = [x.label for x in states]
             return"("+",".join(lab)+")"
 
-        labelToEtat = {}
+        states = {}
         for s0 in auto0.listStates:
             for s1 in auto1.listStates:
                 sn = State(genId(), s0.init and s1.init, estfinal(s0, s1), etatsToLabel((s0, s1)))
-                nauto.addState(sn)
-                labelToEtat[sn.label] = sn
+                states[sn.label] = sn
         
+        transitions = []
         for t0 in auto0.listTransitions:
             for t1 in auto1.listTransitions:
                 if t0.etiquette != t1.etiquette:
                     continue
+                labSrc = etatsToLabel([t0.stateSrc, t1.stateSrc])
+                labDst = etatsToLabel([t0.stateDest, t1.stateDest])
+                if labSrc not in states or labDst not in states:
+                    continue
                 tn = Transition(
-                    labelToEtat[etatsToLabel([t0.stateSrc, t1.stateSrc])], 
+                    states[labSrc], 
                     t0.etiquette, 
-                    labelToEtat[etatsToLabel([t0.stateDest, t1.stateDest])])
-                nauto.addTransition(tn)
+                    states[labDst])
+                transitions.append(tn)
 
-        for s in nauto.listStates:
-            if len([t for t in nauto.listTransitions if t.stateDest == s]) == 0:
-                nauto.removeState(s)
-                for t in nauto.listTransitions:
-                    if t.stateSrc == s:
-                        nauto.removeTransition(t)
+        states = list(states.values())
 
-        return nauto
+        auto = Automate(transitions, states, auto0.label + act + auto1.label if auto0.label != None and auto1.label != None else None)
 
+        prevlen = len(auto.listStates)
+        while True:
+            for s in auto.listStates:
+                if len([t for t in transitions if t.stateDest == s and not t.stateSrc == s]) == 0 and not s.init:
+                    auto.removeState(s)
+            if prevlen == len(auto.listStates):
+                break
+            prevlen = len(auto.listStates)
+
+        return auto
 
     @staticmethod
     def intersection (auto0, auto1):

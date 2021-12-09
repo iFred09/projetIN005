@@ -97,7 +97,7 @@ def test_intersection():
 
     auto3 = Automate.intersection(auto1, auto2)
     auto3.show("./pdf/"+file1+"_inter_"+file2)
-# test_intersection()
+test_intersection()
 
 def test_completeAutomate():
     file1 = "exempleAutomate3"
@@ -135,8 +135,32 @@ def test_determinisation():
     testDeter(autodeter, True)
     testDeter(auto2, False)
     testDeter(autodeter2, True)
-test_determinisation()
-    
+# test_determinisation()
+
+def test_union():
+    # file1 = "automateinterro1"
+    # file2 = "automateinterro2"
+    file3 = "autounion1"
+    file4 = "autounion2"
+
+    # auto1 = Automate.creationAutomate(file1+".txt")
+    # # auto1.show("./pdf/"+file1)
+    # auto2 = Automate.creationAutomate(file2+".txt")
+    # auto2.show("./pdf/"+file2)
+    auto3 = Automate.creationAutomate(file3+".txt")
+    auto3.show("./pdf/"+file3)
+    auto4 = Automate.creationAutomate(file4+".txt")
+    auto4.show("./pdf/"+file4)
+
+    # autounion = Automate.union(auto1, auto2)
+    # autounion.show("./pdf/"+file1+"_union_"+file2)
+    autounion2 = Automate.union(auto3, auto4)
+    autounion2.show("./pdf/"+file3+"_union_"+file4)
+
+    # assert Automate.estComplet(autounion, autounion.getAlphabetFromTransitions())
+    assert Automate.estComplet(autounion2, autounion2.getAlphabetFromTransitions())
+# test_union()
+
 
 # auto1 = Automate.etoile(auto1)
 # auto1.show("./pdf/"+file1+"_etoile")
@@ -148,32 +172,3 @@ test_determinisation()
 # autointer.show("./pdf/"+file1+"_inter_"+file2)
 # autounion = Automate.union(auto1, auto2)
 # autounion.show("./pdf/"+file1+"_union_"+file2)
-
-
-# s1= State(1, False, False)
-# s2= State(2, False, False)
-# print (s1==s2)
-# print (s1!=s2)
-
-# s0 = State(0,True,False)
-# s1 = State(1,False,False)
-# s2 = State(2,False,True)
-
-# t1 = Transition(s0,"a",s0)
-# t2 = Transition(s0,"b",s1)
-# t3 = Transition(s1,"a",s2)
-# t4 = Transition(s1,"b",s2)
-# t5 = Transition(s2,"a",s0)
-# t6 = Transition(s2,"b",s1)
-
-# auto = Automate([t1,t2,t3,t4,t5,t6])
-# print(auto)
-# auto.show("A_ListeTrans")
-
-# auto1 = Automate([t1,t2,t3,t4,t5,t6], [s0,s1,s2])
-# print(auto1)
-# auto.show("2.1.2")
-
-# auto2=Automate.creationAutomate("auto.txt")
-# print(auto2)
-# auto.show("2.1.3")
