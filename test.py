@@ -87,8 +87,8 @@ def test_estDeterministe():
     test(auto6, True)
 
 def test_intersection():
-    file1 = "auto1"
-    file2 = "auto2"
+    file1 = "autounion1"
+    file2 = "autounion2"
 
     auto1 = Automate.creationAutomate(file1+".txt")
     auto1.show("./pdf/"+file1)
@@ -97,7 +97,7 @@ def test_intersection():
 
     auto3 = Automate.intersection(auto1, auto2)
     auto3.show("./pdf/"+file1+"_inter_"+file2)
-# test_intersection()
+test_intersection()
 
 def test_completeAutomate():
     file1 = "exempleAutomate3"
@@ -204,4 +204,4 @@ def test_etoile():
 
     autoet2 = Automate.etoile(auto2)
     autoet2.show("./pdf/"+file2+"_etoile")
-test_etoile()
+# test_etoile()
