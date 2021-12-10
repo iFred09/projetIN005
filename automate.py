@@ -332,7 +332,3 @@ class Automate(AutomateBase):
             speID -= 1
         special = State(speID, True, True, "ฐ")
         return Automate(Tp, auto.listStates+[special], "*"+auto.label if auto.label != None else None)
-
-    @staticmethod
-    def equivalents(auto1, auto2):
-        return False
